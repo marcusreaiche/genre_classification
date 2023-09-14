@@ -53,7 +53,16 @@ def go(config: DictConfig):
     if "check_data" in steps_to_execute:
 
         ## YOUR CODE HERE: call the check_data step
-        pass
+        _ = mlflow.run(
+            os.path.join(root_path, 'check_data'),
+            parameters=dict(
+                reference_artifact=config['data']['reference_dataset'],
+                # The sample_artifact should be a different data set
+                # Using the same one here...
+                sample_artifact=config['data']['reference_dataset'],
+                ks_alpha=config['data']['ks_alpha'],
+            )
+        )
 
     if "segregate" in steps_to_execute:
 
