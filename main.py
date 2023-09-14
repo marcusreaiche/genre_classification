@@ -40,7 +40,15 @@ def go(config: DictConfig):
     if "preprocess" in steps_to_execute:
 
         ## YOUR CODE HERE: call the preprocess step
-        pass
+        _ = mlflow.run(
+            os.path.join(root_path, "preprocess"),
+            parameters=dict(
+                input_artifact="raw_data.parquet:latest",
+                artifact_name="preprocess_data.csv",
+                artifact_type="clean_data",
+                artifact_description="Preprocess data"
+            )
+        )
 
     if "check_data" in steps_to_execute:
 
