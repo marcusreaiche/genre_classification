@@ -3,7 +3,6 @@ import argparse
 import itertools
 import logging
 import os
-
 import yaml
 import tempfile
 import mlflow
@@ -15,7 +14,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import roc_auc_score, plot_confusion_matrix
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import OrdinalEncoder, StandardScaler, FunctionTransformer
+from sklearn.preprocessing import (
+    OrdinalEncoder, StandardScaler, FunctionTransformer)
 import matplotlib.pyplot as plt
 import wandb
 from sklearn.pipeline import Pipeline, make_pipeline
