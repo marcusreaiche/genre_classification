@@ -83,12 +83,30 @@ def go(config: DictConfig):
 
         # Serialize decision tree configuration
         model_config = os.path.abspath("random_forest_config.yml")
+        # Compute model_config relpath from random forest path
+        # - mlflow parameters must have at most 250 characters
+        random_forest_path = os.path.join(root_path, "random_forest")
+        model_config_relpath_from_model_path = os.path.relpath(
+            model_config, start=random_forest_path)
 
         with open(model_config, "w+") as fp:
             fp.write(OmegaConf.to_yaml(config["random_forest_pipeline"]))
 
         ## YOUR CODE HERE: call the random_forest step
-        pass
+        mlflow.run(
+            random_forest_path,
+            parameters=dict(
+                train_data="exercise_14/data_train.csv:latest",
+                model_config=model_config_relpath_from_model_path,
+                export_artifact=(
+                    config['random_forest_pipeline']['export_artifact']),
+                random_seed=(
+                    config['random_forest_pipeline']['random_forest']
+                    ['random_state']),
+                val_size=config['data']['val_size'],
+                stratify=config['data']['stratify']
+            )
+        )
 
     if "evaluate" in steps_to_execute:
 
