@@ -44,6 +44,7 @@ def go(config: DictConfig):
         ## YOUR CODE HERE: call the preprocess step
         _ = mlflow.run(
             os.path.join(root_path, "preprocess"),
+            "main",
             parameters=dict(
                 input_artifact="raw_data.parquet:latest",
                 artifact_name="preprocessed_data.csv",
@@ -57,11 +58,10 @@ def go(config: DictConfig):
         ## YOUR CODE HERE: call the check_data step
         _ = mlflow.run(
             os.path.join(root_path, 'check_data'),
+            "main",
             parameters=dict(
                 reference_artifact=config['data']['reference_dataset'],
-                # The sample_artifact should be a different data set
-                # Using the same one here...
-                sample_artifact=config['data']['reference_dataset'],
+                sample_artifact="preprocessed_data.csv:latest",
                 ks_alpha=config['data']['ks_alpha'],
             )
         )
@@ -71,6 +71,7 @@ def go(config: DictConfig):
         ## YOUR CODE HERE: call the segregate step
         mlflow.run(
             os.path.join(root_path, 'segregate'),
+            "main",
             parameters=dict(
                 input_artifact="preprocessed_data.csv:latest",
                 artifact_root="data",
@@ -97,14 +98,13 @@ def go(config: DictConfig):
         ## YOUR CODE HERE: call the random_forest step
         mlflow.run(
             random_forest_path,
+            "main",
             parameters=dict(
                 train_data="exercise_14/data_train.csv:latest",
                 model_config=model_config_relpath_from_model_path,
                 export_artifact=(
                     config['random_forest_pipeline']['export_artifact']),
-                random_seed=(
-                    config['random_forest_pipeline']['random_forest']
-                    ['random_state']),
+                random_seed=config['main']['random_seed'],
                 val_size=config['data']['val_size'],
                 stratify=config['data']['stratify']
             )
@@ -116,8 +116,9 @@ def go(config: DictConfig):
         export_artifact = config['random_forest_pipeline']['export_artifact']
         mlflow.run(
             os.path.join(root_path, "evaluate"),
+            "main",
             parameters=dict(
-                test_data="exercise_14/data_test.csv:latest",
+                test_data="data_test.csv:latest",
                 model_export=f"{export_artifact}:latest"
             )
         )
